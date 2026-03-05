@@ -19,6 +19,9 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Install depedencies
+        run: npm install
+
       - name: Install Snyk CLI
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
