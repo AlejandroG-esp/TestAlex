@@ -31,7 +31,7 @@ jobs:
           SNYK_ORG: ${{ secrets.SNYK_ORG }}
         run: |
           set +e  # Necesario para evitar que falle si encuentra vulnerabilidades en el código
-          snyk code test --report --org="$SNYK_ORG" --project-name="Test CI/CD SAST" --include-ignores
+          snyk code test --report --org="$SNYK_ORG" --project-name="Test CI/CD SAST Alex" --include-ignores
 
           # Bloque encargado de asegurarse que no falle si aparecen vulnerabilidades en el código
           exit_code=$?
