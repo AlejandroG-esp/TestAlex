@@ -1,0 +1,35 @@
+name: Snyk CI/CD GitHub Container
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  snyk-Container:
+    name: Snyk Container
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Snyk CLI
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: | 
+          npm install -g snyk
+          snyk auth "$SNYK_TOKEN"
+# Instalación y autenticacion de snyk en el runner
+
+      - name: Monitor project in Snyk
+        env:
+          SNYK_ORG: ${{ secrets.SNYK_ORG }}
+        run: |
+          docker build . -t repositorio:tag
+          snyk container monitor repositorio:tag --file=Dockerfile --org="$SNYK_ORG"
