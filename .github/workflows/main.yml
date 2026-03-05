@@ -1,0 +1,42 @@
+name: Snyk CI/CD GitHub SAST
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  snyk-sast:
+    name: Snyk Static Code Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Snyk CLI
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: |
+          npm install -g snyk
+          snyk auth "$SNYK_TOKEN"
+
+      - name: Monitor project in Snyk
+        env:
+          SNYK_ORG: ${{ secrets.SNYK_ORG }}
+        run: |
+          set +e  # Necesario para evitar que falle si encuentra vulnerabilidades en el código
+          snyk code test --report --org="$SNYK_ORG" --project-name="Test CI/CD SAST" --include-ignores
+
+          # Bloque encargado de asegurarse que no falle si aparecen vulnerabilidades en el código
+          exit_code=$?
+          set -e
+
+          if [ "$exit_code" -eq 1 ]; then
+            exit 0
+          fi
