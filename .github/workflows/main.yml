@@ -1,4 +1,4 @@
-name: Snyk CI/CD GitHub SAST
+name: Snyk CI/CD SAST y SCA
 
 on:
   push:
@@ -26,17 +26,46 @@ jobs:
           npm install -g snyk
           snyk auth "$SNYK_TOKEN"
 
-      - name: Monitor project in Snyk
+      - name: SAST Scan
         env:
           SNYK_ORG: ${{ secrets.SNYK_ORG }}
         run: |
-          set +e  # Necesario para evitar que falle si encuentra vulnerabilidades en el código
+          set +e
           snyk code test --report --org="$SNYK_ORG" --project-name="Test CI/CD SAST Alex" --include-ignores
-
-          # Bloque encargado de asegurarse que no falle si aparecen vulnerabilidades en el código
           exit_code=$?
           set -e
+          if [ "$exit_code" -eq 1 ]; then
+            exit 0
+          fi
 
+  snyk-sca:
+    name: Snyk Dependency Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Snyk CLI
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: |
+          npm install -g snyk
+          snyk auth "$SNYK_TOKEN"
+
+      - name: SCA Scan
+        env:
+          SNYK_ORG: ${{ secrets.SNYK_ORG }}
+        run: |
+          set +e
+          snyk test --all-projects --org="$SNYK_ORG"
+          exit_code=$?
+          set -e
           if [ "$exit_code" -eq 1 ]; then
             exit 0
           fi
