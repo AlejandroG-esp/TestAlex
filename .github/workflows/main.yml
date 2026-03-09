@@ -33,7 +33,7 @@ jobs:
           SNYK_ORG: ${{ secrets.SNYK_ORG }}
         run: |
           set +e
-          snyk code test --report --org="$SNYK_ORG" --project-name="Test CI/CD SAST Alex" --include-ignores
+          snyk code test --report --org="$SNYK_ORG" --project-name="Test CI/CD SAST Github Alex" --include-ignores
           exit_code=$?
           set -e
           if [ "$exit_code" -eq 1 ]; then
