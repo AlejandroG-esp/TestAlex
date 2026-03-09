@@ -66,7 +66,7 @@ jobs:
           SNYK_ORG: ${{ secrets.SNYK_ORG }}
         run: |
           set +e
-          snyk monitor --all-projects --org="$SNYK_ORG" --org="$SNYK_ORG" --include-ignores
+          snyk monitor --all-projects --org="$SNYK_ORG" --project-name="Test CI/CD SCA Alex" --include-ignores
           exit_code=$?
           set -e
           if [ "$exit_code" -eq 1 ]; then
