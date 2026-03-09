@@ -56,7 +56,7 @@ jobs:
           cache: 'npm'
 
       - name: Install depedencies
-        run: npm ci
+        run: npm install
 
       - name: Install Snyk CLI
         env:
