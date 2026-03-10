@@ -31,5 +31,5 @@ jobs:
         env:
           SNYK_ORG: ${{ secrets.SNYK_ORG }}
         run: |
-          docker build . -t repositorio:tag
-          snyk container monitor repositorio:tag --file=Dockerfile --org="$SNYK_ORG"
+          docker build 
+          snyk container monitor --file=Dockerfile --org="$SNYK_ORG"
