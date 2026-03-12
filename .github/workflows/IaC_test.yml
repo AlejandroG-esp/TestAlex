@@ -1,0 +1,37 @@
+name: Snyk CI/CD GitHub IaC
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  snyk-IaC:
+    name: Snyk IaC
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Snyk CLI
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: | 
+          npm install -g snyk
+          snyk auth "$SNYK_TOKEN"
+# Instalación y autenticacion de snyk en el runner
+
+      - name: Monitor project in Snyk
+        env:
+          SNYK_ORG: ${{ secrets.SNYK_ORG }}
+        run: |
+          set +e	# Necesario para evitar que falle si encuentra vulnerabilidades en el código
+          snyk iac test --report --org="$SNYK_ORG" --target-name="test" || true
+# Bloque encargado de asegurarse que no falle si aparecen vulnerabilidades en el código
+  
